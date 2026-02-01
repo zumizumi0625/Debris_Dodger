@@ -32,6 +32,11 @@ namespace Platformer.Mechanics
         [Tooltip("スポーンする方向")]
         public SpawnDirection spawnDirection = SpawnDirection.All;
         
+        [Header("Speed Settings")]
+        [Tooltip("デブリの速度倍率（全体調整用）")]
+        [Range(0.1f, 3.0f)]
+        public float speedMultiplier = 1.0f;
+        
         [Header("Difficulty Scaling")]
         [Tooltip("時間経過でスポーン間隔を短くするか")]
         public bool scaleDifficulty = true;
@@ -120,16 +125,18 @@ namespace Platformer.Mechanics
             // デブリを生成
             GameObject debris = Instantiate(prefabToSpawn, spawnPosition, Quaternion.identity);
             
-            // 方向を設定
+            // 方向と速度を設定
             DebrisController controller = debris.GetComponent<DebrisController>();
             if (controller != null)
             {
                 controller.SetDirection(direction);
+                // 速度倍率を適用
+                controller.moveSpeed *= speedMultiplier;
             }
             
             activeDebris.Add(debris);
             
-            Debug.Log($"Debris spawned at {spawnPosition}, direction: {direction}");
+            Debug.Log($"Debris spawned at {spawnPosition}, direction: {direction}, speed multiplier: {speedMultiplier}");
         }
         
         /// <summary>

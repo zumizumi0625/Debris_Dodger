@@ -167,9 +167,31 @@ namespace Platformer.Mechanics
             
             Debug.Log("Satellite destroyed!");
             
-            // SatelliteDeathイベントをスケジュール
-            var deathEvent = Schedule<SatelliteDeath>();
-            deathEvent.satelliteHealth = this;
+            // 直接GameOverUIを表示
+            // includeInactive = true で非アクティブなオブジェクトも検索
+            var gameOverUI = FindObjectOfType<Platformer.UI.GameOverUI>(true);
+            if (gameOverUI != null)
+            {
+                // 少し遅延させて表示
+                StartCoroutine(ShowGameOverDelayed(gameOverUI, 0.5f));
+            }
+            else
+            {
+                Debug.LogWarning("GameOverUI not found in scene! Make sure GameOverPanel exists in Canvas.");
+            }
+            
+            // 旧イベントシステム（バックアップ）
+            // var deathEvent = Schedule<SatelliteDeath>();
+            // deathEvent.satelliteHealth = this;
+        }
+        
+        /// <summary>
+        /// ゲームオーバー表示を遅延実行
+        /// </summary>
+        System.Collections.IEnumerator ShowGameOverDelayed(Platformer.UI.GameOverUI gameOverUI, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            gameOverUI.Show();
         }
         
         /// <summary>

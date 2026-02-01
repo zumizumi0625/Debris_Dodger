@@ -229,23 +229,41 @@ namespace Platformer.Mechanics
         }
 
         /// <summary>
-        /// 画面外に出た時の処理
+        /// 画面外に出た時の処理 - ダメージを受けて画面中央にリスポーン
         /// </summary>
         void OnExitScreen()
         {
-            // ゲームオーバー処理
-            controlEnabled = false;
+            var health = GetComponent<SatelliteHealth>();
             
-            // 効果音再生
-            if (deathAudio != null && audioSource != null)
+            // HPがある場合のみ処理
+            if (health != null && health.IsAlive)
             {
-                audioSource.PlayOneShot(deathAudio);
+                // 無敵中でなければダメージを受ける
+                if (!health.IsInvincible)
+                {
+                    health.TakeDamage(1);
+                }
+                
+                // まだ生きていれば画面中央に戻す
+                if (health.IsAlive)
+                {
+                    // カメラの中心位置に移動
+                    Vector3 cameraPos = mainCamera.transform.position;
+                    transform.position = new Vector3(cameraPos.x, cameraPos.y, transform.position.z);
+                    
+                    // 速度をリセット
+                    velocity = Vector2.zero;
+                    angularVelocity = 0f;
+                    
+                    if (body != null)
+                    {
+                        body.velocity = Vector2.zero;
+                        body.angularVelocity = 0f;
+                    }
+                    
+                    Debug.Log("Player respawned at center due to screen exit.");
+                }
             }
-            
-            // PlayerEnteredDeathZoneイベントをスケジュール
-            var deathEvent = Schedule<PlayerEnteredDeathZone>();
-            // Note: PlayerEnteredDeathZoneが既存のPlayerControllerを参照している場合、
-            // 新しいSatelliteController用のイベントを作成する必要があるかもしれない
         }
 
         /// <summary>

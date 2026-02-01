@@ -211,7 +211,16 @@ namespace Platformer.UI
             {
                 if (heartImages[i] != null)
                 {
-                    heartImages[i].sprite = (i < currentHP) ? fullHeartSprite : emptyHeartSprite;
+                    // スプライトが設定されている場合のみ変更
+                    if (fullHeartSprite != null && emptyHeartSprite != null)
+                    {
+                        heartImages[i].sprite = (i < currentHP) ? fullHeartSprite : emptyHeartSprite;
+                    }
+                    
+                    // HPがない場合は透明度を下げる
+                    Color color = heartImages[i].color;
+                    color.a = (i < currentHP) ? 1f : 0.3f;
+                    heartImages[i].color = color;
                 }
             }
         }

@@ -24,6 +24,9 @@ namespace Platformer.UI
         
         [Tooltip("タイトルに戻るボタン")]
         public Button titleButton;
+
+        [Tooltip("最終スコアを表示するテキスト")]
+        public TextMeshProUGUI finalScoreText;
         
         [Header("Animation")]
         [Tooltip("フェードイン時間")]
@@ -66,6 +69,15 @@ namespace Platformer.UI
             }
         }
         
+        void Update()
+        {
+            // ゲームオーバー表示中に任意のキーでタイトルに戻る
+            if (isShowing && Input.anyKeyDown)
+            {
+                OnTitleClicked();
+            }
+        }
+        
         /// <summary>
         /// ゲームオーバー画面を表示
         /// </summary>
@@ -77,6 +89,21 @@ namespace Platformer.UI
             if (gameOverPanel != null)
             {
                 gameOverPanel.SetActive(true);
+            }
+
+            // スコア表示
+            if (finalScoreText != null)
+            {
+                var scoreManager = FindObjectOfType<Mechanics.ScoreManager>();
+                if (scoreManager != null)
+                {
+                    finalScoreText.text = $"Result Score: {scoreManager.Score}";
+                }
+                else
+                {
+                    finalScoreText.text = "Result Score: 0";
+                    Debug.LogWarning("ScoreManager not found!");
+                }
             }
             
             StartCoroutine(FadeIn());
