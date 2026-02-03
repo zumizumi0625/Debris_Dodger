@@ -18,6 +18,9 @@ namespace Platformer.Mechanics
         [Tooltip("ダメージ後の無敵時間（秒）")]
         public float invincibilityDuration = 1.5f;
         
+        [Tooltip("ゲーム開始時の無敵時間（秒）")]
+        public float startInvincibilityDuration = 5.0f;
+        
         [Header("Visual Feedback")]
         [Tooltip("ダメージ時の点滅回数")]
         public int blinkCount = 5;
@@ -62,6 +65,14 @@ namespace Platformer.Mechanics
         {
             currentHP = maxHP;
             OnHealthChanged?.Invoke(currentHP, maxHP);
+            
+            // ゲーム開始時の無敵時間を設定
+            if (startInvincibilityDuration > 0)
+            {
+                isInvincible = true;
+                invincibilityTimer = startInvincibilityDuration;
+                Debug.Log($"Start invincibility activated for {startInvincibilityDuration} seconds");
+            }
         }
         
         void Update()
